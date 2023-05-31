@@ -16,7 +16,9 @@ namespace MessageBox.Avalonia.ViewModels;
 public abstract class AbstractMsBoxViewModel : INotifyPropertyChanged
 
 {
-    protected AbstractMsBoxViewModel(AbstractMessageBoxParams @params, Icon icon = Icon.None, Bitmap bitmap = null)
+    private readonly WindowBase _window;
+    
+    protected AbstractMsBoxViewModel(AbstractMessageBoxParams @params, WindowBase window, Icon icon = Icon.None, Bitmap bitmap = null)
     {
         if (bitmap != null)
         {
@@ -24,10 +26,11 @@ public abstract class AbstractMsBoxViewModel : INotifyPropertyChanged
         }
         else if (icon != Icon.None)
         {
-            ImagePath = new Bitmap(AvaloniaLocator.Current.GetService<IAssetLoader>()
-                .Open(new Uri(
+            ImagePath = new Bitmap(AssetLoader.Open(new Uri(
                     $" avares://MessageBox.Avalonia/Assets/{icon.ToString().ToLowerInvariant()}.png")));
         }
+
+        _window = window;
 
         MinWidth = @params.MinWidth;
         MaxWidth = @params.MaxWidth;
@@ -77,7 +80,9 @@ public abstract class AbstractMsBoxViewModel : INotifyPropertyChanged
 
     public async Task Copy()
     {
-        await AvaloniaLocator.Current.GetService<IClipboard>().SetTextAsync(ContentMessage);
+        var clipboard = TopLevel.GetTopLevel(_window)?.Clipboard;
+        if (clipboard != null)
+            await clipboard.SetTextAsync(ContentMessage);
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

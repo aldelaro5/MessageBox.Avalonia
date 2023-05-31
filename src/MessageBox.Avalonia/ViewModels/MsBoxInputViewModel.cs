@@ -20,7 +20,7 @@ public class MsBoxInputViewModel : AbstractMsBoxViewModel
     private char? _passChar;
 
     public MsBoxInputViewModel(MessageBoxInputParams @params, MsBoxInputWindow msBoxInputWindow) : base(@params,
-        @params.Icon)
+        msBoxInputWindow, @params.Icon)
     {
         _window = msBoxInputWindow;
         ButtonDefinitions = @params.ButtonDefinitions;
